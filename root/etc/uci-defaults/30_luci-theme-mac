@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# 注册 Mac 主题并把默认外观切到 Mac（升级主题包后同样生效；
+# 想换回其他主题：LuCI → 系统 → 系统 → 语言和界面 手动切换）
+
+uci -q set luci.themes.Mac=/luci-static/mac
+uci -q set luci.main.mediaurlbase=/luci-static/mac
+uci -q commit luci
+
+exit 0
