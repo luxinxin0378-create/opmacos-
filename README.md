@@ -1,24 +1,31 @@
-# LuCI Theme "mac" — macOS 风格路由器主题
+# LuCI Theme "mac" — Liquid Glass 主题（iOS 27 / macOS 27 风格）
 
-**OpenWrt / ponwrt LuCI 的 macOS 风格主题**：磨砂玻璃顶栏 + 大圆角卡片 + 苹果蓝胶囊按钮，把路由器后台变成苹果味儿。
+**OpenWrt / ponwrt LuCI 的液态玻璃主题**：按 iOS 27 的 Liquid Glass 设计语言打造——强扩散玻璃、暗化边缘、镜面高光、三档透明度。
 
-基于官方 `luci-theme-bootstrap` 模板体系（现代 client-side 渲染 LuCI）+ macOS 设计语言覆盖层，纯 CSS 皮肤包，不碰任何底层代码。
+基于官方 `luci-theme-bootstrap` 模板体系（现代 client-side 渲染 LuCI）+ Liquid Glass 覆盖层，纯 CSS 皮肤包，不碰任何底层代码。
 
-## 特性
+## 特性（v2 · 对标 iOS 27）
 
-| 元素 | 实现 |
+| iOS 27 特性 | 主题实现 |
 |---|---|
-| 字体 | SF Pro 系统字体栈（-apple-system → PingFang SC 兜底） |
-| 顶栏 | **磨砂玻璃**（backdrop-filter: saturate blur），sticky 跟随滚动 |
-| 卡片 | 16px 大圆角 + 柔和双层阴影 + 细分割线（#f5f5f7 底 / 白卡片） |
-| 主色 | 苹果蓝 `#0071e3`（暗色 `#0a84ff`） |
-| 按钮 | 胶囊圆角，主要操作蓝底白字，按压微缩反馈 |
-| 标签页 | macOS 分段控件（灰槽 + 白色浮起选中块） |
-| 下拉菜单 | 磨砂浮层 + 悬停苹果蓝填充 |
-| 表格 | 无边框 + 行悬停淡蓝高亮 + 全大写小号表头 |
-| 暗色模式 | **跟随系统**（prefers-color-scheme，全套配色变量自动切换） |
+| 强扩散玻璃材质 | backdrop-filter: blur(26px) saturate(200%)，背景三团柔和色斑供玻璃透色折射 |
+| 暗化边缘（darkened edge） | 所有玻璃层 1px 暗边框 + 内圈暗 inset，层次分离更清晰 |
+| 更亮镜面高光 | 玻璃层顶部 inset 高光 + 内圈微亮描边 |
+| 透明度滑块 | `:root` 里 `--lg-alpha` 三档可调（见下） |
+| 滚动统一顶栏 | 内容滚入玻璃下方时顶栏自动加实保证可读性（scroll-driven animation） |
+| 暗色模式 | 跟随系统切换深色玻璃（#0d0d0f 底 + 深色玻璃层） |
 
-覆盖范围：顶栏/导航/下拉、内容卡片、表单控件、按钮体系（primary/negative/reset/disabled）、表格、标签页、提示框（warning/error/info）、徽标、进度条、滚动条、页脚、登录页。
+另有：20px 大圆角玻璃卡片、玻璃胶囊按钮、iOS 分段控件标签页、玻璃凹陷输入框、玻璃提示框与徽标。
+
+## 透明度三档（对应 iOS 27 设置里的滑块）
+
+改 `htdocs/luci-static/mac/cascade.css` 顶部 `:root` 一行：
+
+```css
+--lg-alpha: .48;  /* 超清晰 ultra-clear */
+--lg-alpha: .66;  /* 均衡 balanced ← 默认 */
+--lg-alpha: .88;  /* 完全着色 fully-tinted */
+```
 
 ## 安装（编译集成）
 
@@ -49,6 +56,7 @@ cp -a /tmp/luci-theme-mac "$SRC/package/luci-theme-mac"
 
 - 现代 LuCI（ucode 模板、client-side 渲染）：OpenWrt 23.05+ / main / ponwrt / immortalwrt
 - 仅依赖 `luci-base`，无其他组件
+- 玻璃效果需浏览器支持 backdrop-filter（Chrome/Edge/Safari 全支持）；不支持时自动降级为半透明实色
 - 含移动端样式（mobile.css），小屏自动降级
 
 ## 文件结构

@@ -2655,216 +2655,193 @@ body[data-page='admin-status-overview'] .cbi-title .label.notice:hover {
 /* === END STATUS OVERVIEW: HIDE/SHOW BUTTONS === */
 
 /* ================================================================
-   LuCI Theme "mac" — macOS 风格覆盖层
-   设计语言：SF 系统字体栈 / #f5f5f7 底 / 磨砂玻璃顶栏 / 大圆角卡片
-   苹果蓝 #0071e3 / 柔和阴影 / 细分割线
+   LuCI Theme "mac" — Liquid Glass 覆盖层 v2（iOS 27 / macOS 27 风格）
+   特性：强扩散玻璃 / 暗化边缘 / 镜面高光 / 三档透明度 / 滚动统一顶栏
+   ------------------------------------------------
+   透明度三档（对应 iOS 27 设置里的 Liquid Glass 滑块）：
+     超清晰 ultra-clear : --lg-alpha: .48
+     均衡   balanced    : --lg-alpha: .66   ← 默认
+     着色   fully-tinted: --lg-alpha: .88
+   修改下面 :root 的 --lg-alpha 一行即可切换。
    ================================================================ */
 
 :root {
+  --lg-alpha: .66;
+  --lg-blur: 26px;
+  --lg-sat: 200%;
+  --lg-tint: 255, 255, 255;           /* 亮色玻璃色调 */
+  --lg-edge: rgba(0, 0, 0, .12);      /* 暗化边缘（iOS 27 新增） */
+  --lg-spec: rgba(255, 255, 255, .80);/* 镜面高光（iOS 27 更亮） */
+  --lg-radius: 20px;
   --mac-bg: #f5f5f7;
   --mac-blue: #0071e3;
   --mac-blue-hover: #0077ed;
-  --mac-blue-active: #0066cc;
   --mac-text: #1d1d1f;
   --mac-text-2: #6e6e73;
-  --mac-border: rgba(0, 0, 0, 0.08);
-  --mac-card: #ffffff;
-  --mac-card-radius: 16px;
-  --mac-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --mac-glass: rgba(255, 255, 255, 0.72);
+  --mac-text: #1d1d1f;
 }
 
-/* ---------- 全局 ---------- */
-
+/* 玻璃才能“折射”：背景铺三团柔和色斑（对应 iOS 壁纸透色） */
 body {
   background-color: var(--mac-bg);
+  background-image:
+    radial-gradient(900px 520px at 88% -8%, rgba(0, 113, 227, .11), transparent 60%),
+    radial-gradient(720px 460px at -8% 34%, rgba(255, 149, 0, .08), transparent 62%),
+    radial-gradient(820px 600px at 52% 112%, rgba(88, 86, 214, .09), transparent 62%);
+  background-attachment: fixed;
   color: var(--mac-text);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
     "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
   font-size: 14px;
-  letter-spacing: 0.01em;
-}
-
-h1, h2, h3, h4, h5, h6, legend {
-  font-family: inherit;
-  color: var(--mac-text);
-  letter-spacing: 0;
+  letter-spacing: .01em;
 }
 
 a { color: var(--mac-blue); }
 a:hover { color: var(--mac-blue-hover); }
+::selection { background: rgba(0, 113, 227, .25); }
 
-::selection { background: rgba(0, 113, 227, 0.25); }
-
-/* 滚动条：细圆角苹果灰 */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, .22);
   border-radius: 8px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
-::-webkit-scrollbar-thumb:hover { background-color: rgba(0, 0, 0, 0.35); }
 
-/* ---------- 顶栏：macOS 菜单栏磨砂玻璃 ---------- */
+/* ---------- 玻璃材质（iOS 27 Liquid Glass 三要素） ----------
+   1. backdrop-filter 强扩散（blur + saturate）
+   2. 暗化边缘：border + 内圈暗 inset
+   3. 镜面高光：顶部亮 inset + 内圈微亮
+---------------------------------------------------------------- */
+
+header,
+.cbi-section,
+.alert-message,
+.dropdown-menu,
+.ifacebox,
+#indicators .ifacebadge {
+  background: rgba(var(--lg-tint), var(--lg-alpha));
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  border: 1px solid var(--lg-edge);
+  box-shadow:
+    inset 0 1px 0 var(--lg-spec),
+    inset 0 -1px 0 rgba(255, 255, 255, .18),
+    inset 0 0 0 1px rgba(255, 255, 255, .12),
+    0 8px 24px rgba(0, 0, 0, .08),
+    0 2px 6px rgba(0, 0, 0, .05);
+}
+
+/* 卡片：大圆角玻璃 */
+.cbi-section {
+  border-radius: var(--lg-radius);
+  padding: 18px 20px;
+  margin: 0 0 20px 0;
+}
+
+.cbi-section > h3, .cbi-section > legend, .cbi-map > h3 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  margin: 0 0 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, .07);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
+}
+
+/* ---------- 顶栏：玻璃菜单条 + 滚动统一化（iOS 27 uniform toolbar） ---------- */
 
 header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--mac-glass);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid var(--mac-border);
-  box-shadow: none;
-  height: auto;
+  border-radius: 0;
+  border-left: none; border-right: none; border-top: none;
   padding: 6px 16px;
+}
+
+/* 内容滚到玻璃下面时，顶栏自动加实保证可读性 */
+@supports (animation-timeline: scroll()) {
+  header {
+    animation: lg-uniform linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes lg-uniform {
+    0%    { background: rgba(var(--lg-tint), calc(var(--lg-alpha) * .45)); }
+    140px { background: rgba(var(--lg-tint), .94); }
+    100%  { background: rgba(var(--lg-tint), .94); }
+  }
 }
 
 header .brand {
   color: var(--mac-text);
   font-size: 17px;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -.02em;
   padding: 4px 10px;
-  border-radius: 8px;
+  border-radius: 9px;
 }
+header .brand:hover { background: rgba(0, 0, 0, .06); text-decoration: none; }
 
-header .brand:hover {
-  background: rgba(0, 0, 0, 0.05);
-  text-decoration: none;
-}
-
-/* 主菜单：横向菜单项 */
-.nav > li > a.menu,
-.nav > li > a {
+.nav > li > a.menu, .nav > li > a {
   color: var(--mac-text);
   font-size: 14px;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: 9px;
   padding: 5px 12px;
-  transition: background 0.15s ease;
+  transition: background .15s;
+}
+.nav > li > a:hover, .nav a.menu:hover { background: rgba(0, 0, 0, .07); color: var(--mac-text); }
+
+.nav .active > a.menu, .nav > li.active > a {
+  color: #fff;
+  background: var(--mac-blue);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 1px 3px rgba(0, 113, 227, .4);
 }
 
-.nav > li > a:hover,
-.nav a.menu:hover {
-  background: rgba(0, 0, 0, 0.06);
-  color: var(--mac-text);
-}
-
-.nav .active > a.menu,
-.nav > li.active > a {
-  color: var(--mac-blue);
-  background: rgba(0, 113, 227, 0.10);
-}
-
-/* 下拉菜单：磨砂浮层 */
-.nav .dropdown-menu,
+/* 下拉：浮起玻璃层 */
 .dropdown-menu {
-  background: rgba(252, 252, 253, 0.92) !important;
-  -webkit-backdrop-filter: saturate(180%) blur(24px);
-  backdrop-filter: saturate(180%) blur(24px);
-  border: 1px solid var(--mac-border);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
   padding: 5px;
   min-width: 200px;
 }
-
-.dropdown-menu a.menu,
-.dropdown-menu li a {
+.dropdown-menu a.menu, .dropdown-menu li a {
   color: var(--mac-text);
-  border-radius: 8px;
+  border-radius: 9px;
   padding: 7px 12px;
   font-size: 13.5px;
 }
-
-.dropdown-menu li a:hover,
-.dropdown-menu a.menu:hover {
+.dropdown-menu li a:hover, .dropdown-menu a.menu:hover {
   background: var(--mac-blue);
   color: #fff;
 }
-
-.dropdown-menu .active a,
-.dropdown-menu li.active a {
+.dropdown-menu .active a, .dropdown-menu li.active a {
   color: var(--mac-blue);
-  background: rgba(0, 113, 227, 0.10);
-  border-radius: 8px;
+  background: rgba(0, 113, 227, .12);
+  border-radius: 9px;
 }
 
-/* 状态指示灯（顶栏右侧） */
 #indicators .ifacebadge {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--mac-border);
-  border-radius: 9px;
-  box-shadow: none;
+  border-radius: 10px;
   color: var(--mac-text-2);
   font-size: 12px;
   padding: 3px 9px;
 }
 
-/* ---------- 主内容区 ---------- */
+/* ---------- 主内容 ---------- */
 
-#maincontent.container {
-  max-width: 1080px;
-  padding: 24px 20px 40px;
-}
-
-.container > p,
-.container > span { color: var(--mac-text-2); }
-
-/* 页面容器卡片化 */
-.cbi-map {
-  color: var(--mac-text);
-}
-
-.cbi-map-descr {
-  color: var(--mac-text-2);
-  margin-bottom: 14px;
-  font-size: 13.5px;
-}
-
-.cbi-section {
-  background: var(--mac-card);
-  border: 1px solid var(--mac-border);
-  border-radius: var(--mac-card-radius);
-  box-shadow: var(--mac-shadow);
-  padding: 18px 20px;
-  margin: 0 0 20px 0;
-}
-
-.cbi-section > h3,
-.cbi-section > legend,
-.cbi-map > h3 {
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin: 0 0 14px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--mac-border);
-}
-
+#maincontent.container { max-width: 1080px; padding: 24px 20px 40px; }
+.cbi-map-descr { color: var(--mac-text-2); margin-bottom: 14px; font-size: 13.5px; }
 .cbi-section-descr { color: var(--mac-text-2); font-size: 13px; }
 
-/* 表单行 */
-.cbi-value {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  padding: 10px 0;
-}
-
+.cbi-value { border-bottom: 1px solid rgba(0, 0, 0, .05); padding: 10px 0; }
 .cbi-value:last-child { border-bottom: none; }
+.cbi-value-title { font-weight: 500; }
+.cbi-value-descr, .cbi-value-description { color: var(--mac-text-2); font-size: 12.5px; }
 
-.cbi-value-title { color: var(--mac-text); font-weight: 500; }
-
-.cbi-value-descr, .cbi-value-description {
-  color: var(--mac-text-2);
-  font-size: 12.5px;
-}
-
-/* ---------- 输入控件 ---------- */
+/* ---------- 输入控件：玻璃凹陷 ---------- */
 
 input[type="text"], input[type="password"], input[type="email"],
 input[type="number"], input[type="search"], input[type="url"],
@@ -2872,412 +2849,218 @@ input[type="datetime-local"], input[type="date"], input[type="time"],
 select, textarea,
 .cbi-input-text, .cbi-input-select, .cbi-input-value, .cbi-input-file,
 .cbi-dropdown {
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  border-radius: 9px;
+  background: rgba(255, 255, 255, .55);
+  border: 1px solid rgba(0, 0, 0, .12);
+  border-radius: 10px;
   color: var(--mac-text);
   font-family: inherit;
   font-size: 13.5px;
   padding: 6px 10px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .06);
+  transition: border-color .15s, box-shadow .15s;
 }
 
-input:focus, select:focus, textarea:focus,
-.cbi-dropdown:focus,
-input[type="text"]:focus, input[type="password"]:focus {
+input:focus, select:focus, textarea:focus, .cbi-dropdown:focus {
   outline: none;
   border-color: var(--mac-blue);
-  box-shadow: 0 0 0 3.5px rgba(0, 113, 227, 0.22);
+  box-shadow: 0 0 0 3.5px rgba(0, 113, 227, .22), inset 0 1px 2px rgba(0, 0, 0, .04);
 }
 
 input::placeholder, textarea::placeholder { color: #a1a1a6; }
 
-/* 勾选框与单选：苹果蓝 */
-input[type="checkbox"], input[type="radio"] {
-  accent-color: var(--mac-blue);
-  width: 15px;
-  height: 15px;
-}
+input[type="checkbox"], input[type="radio"] { accent-color: var(--mac-blue); width: 15px; height: 15px; }
 
-/* ---------- 按钮：胶囊与苹果蓝 ---------- */
+/* ---------- 按钮：玻璃胶囊 + 高光 ---------- */
 
 .btn, .cbi-button,
 .cbi-page-actions button, .cbi-page-actions input {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid transparent;
+  background: rgba(255, 255, 255, .55);
+  border: 1px solid rgba(0, 0, 0, .10);
   border-radius: 9999px;
   color: var(--mac-text);
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 500;
   padding: 6px 18px;
-  box-shadow: none;
-  transition: background 0.15s, color 0.15s, transform 0.05s;
-  text-shadow: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .75),
+    inset 0 -1px 0 rgba(0, 0, 0, .04),
+    0 1px 3px rgba(0, 0, 0, .08);
+  transition: background .15s, transform .05s;
 }
 
-.btn:hover, .cbi-button:hover {
-  background: rgba(0, 0, 0, 0.09);
-  color: var(--mac-text);
-  text-decoration: none;
-}
-
-.btn:active, .cbi-button:active { transform: scale(0.97); }
+.btn:hover, .cbi-button:hover { background: rgba(255, 255, 255, .8); color: var(--mac-text); text-decoration: none; }
+.btn:active, .cbi-button:active { transform: scale(.97); }
 
 .btn.primary, .cbi-button.primary,
 .cbi-button-apply, .cbi-button-save, .cbi-button-positive {
   background: var(--mac-blue);
+  border-color: rgba(0, 90, 180, .25);
   color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .35),
+    0 2px 6px rgba(0, 113, 227, .35);
 }
-
 .btn.primary:hover, .cbi-button.primary:hover,
-.cbi-button-apply:hover, .cbi-button-save:hover, .cbi-button-positive:hover {
-  background: var(--mac-blue-hover);
-  color: #fff;
+.cbi-button-apply:hover, .cbi-button-save:hover {
+  background: var(--mac-blue-hover); color: #fff;
 }
 
-.cbi-button-negative, .cbi-button-remove {
-  background: rgba(0, 0, 0, 0.05);
-  color: #e00b2c;
-}
+.cbi-button-negative, .cbi-button-remove { color: #e00b2c; }
+.cbi-button-negative:hover, .cbi-button-remove:hover { background: rgba(224, 11, 44, .12); color: #e00b2c; }
 
-.cbi-button-negative:hover, .cbi-button-remove:hover {
-  background: rgba(224, 11, 44, 0.10);
-  color: #e00b2c;
-}
-
-.cbi-button-reset, .cbi-button-neutral {
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--mac-text);
-}
-
-.btn.disabled, .cbi-button.disabled,
-.btn[disabled], .cbi-button[disabled] {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
+.btn.disabled, .cbi-button.disabled, .btn[disabled], .cbi-button[disabled] { opacity: .45; cursor: not-allowed; }
 
 /* ---------- 表格 ---------- */
 
-.table, .cbi-section-table {
-  background: transparent;
-  border-radius: 12px;
-}
-
-.table .tr, .cbi-section-table-row {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  transition: background 0.12s;
-}
-
+.table .tr, .cbi-section-table-row { border-bottom: 1px solid rgba(0, 0, 0, .06); transition: background .12s; }
 .table .tr:last-child, .cbi-section-table-row:last-child { border-bottom: none; }
-
-.table .tr:hover, .cbi-section-table-row:hover {
-  background: rgba(0, 113, 227, 0.045);
+.table .tr:hover, .cbi-section-table-row:hover { background: rgba(0, 113, 227, .06); }
+.table .th, .table .td { border: none; padding: 9px 12px; }
+.table .th {
+  color: var(--mac-text-2); font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em;
 }
 
-.table .th, .table .td,
-.cbi-section-table-cell {
-  border: none;
-  padding: 9px 12px;
-}
-
-.table .th, .cbi-section-table-titles .th {
-  color: var(--mac-text-2);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background: transparent;
-}
-
-/* ---------- 标签页：苹果分段控件 ---------- */
+/* ---------- 标签页：iOS 分段控件（玻璃槽） ---------- */
 
 .cbi-tabmenu, ul.tabs {
-  background: rgba(120, 120, 128, 0.12);
+  background: rgba(120, 120, 128, .14);
   border: none;
-  border-radius: 10px;
+  border-radius: 11px;
   padding: 2.5px;
   display: inline-flex;
   gap: 2px;
   margin-bottom: 16px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .05);
 }
-
-.cbi-tabmenu li, ul.tabs li {
-  border: none;
-  background: transparent;
-  border-radius: 8px;
-  margin: 0;
-}
-
+.cbi-tabmenu li, ul.tabs li { border: none; background: transparent; border-radius: 9px; margin: 0; }
 .cbi-tabmenu li a, ul.tabs li a {
+  color: var(--mac-text); font-size: 13px; font-weight: 500;
+  padding: 5px 16px; border-radius: 9px; border: none;
+}
+.cbi-tabmenu li:hover a, ul.tabs li:hover a { background: rgba(0, 0, 0, .05); }
+.cbi-tabmenu li.active a, ul.tabs li.active a {
+  background: rgba(255, 255, 255, .9);
   color: var(--mac-text);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 5px 16px;
-  border-radius: 8px;
-  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .14), inset 0 1px 0 rgba(255, 255, 255, .8);
 }
 
-.cbi-tabmenu li:hover a, ul.tabs li:hover a {
-  color: var(--mac-text);
-  background: rgba(0, 0, 0, 0.04);
-}
+/* ---------- 提示框：玻璃浮层 ---------- */
 
-.cbi-tabmenu li.active a, ul.tabs li.active a,
-.cbi-tab-selected a {
-  background: #fff;
-  color: var(--mac-text);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
-}
-
-/* ---------- 提示框：iOS 弹窗风 ---------- */
-
-.alert-message {
-  background: var(--mac-card);
-  border: 1px solid var(--mac-border);
-  border-radius: 14px;
-  box-shadow: var(--mac-shadow);
-  color: var(--mac-text);
-  padding: 14px 18px;
-}
-
-.alert-message h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-
-.alert-message.warning {
-  background: #fff8e6;
-  border-color: rgba(255, 180, 0, 0.35);
-}
-.alert-message.warning h4 { color: #a36a00; }
-
-.alert-message.error {
-  background: #fff1f2;
-  border-color: rgba(224, 11, 44, 0.30);
-}
+.alert-message { border-radius: 16px; padding: 14px 18px; }
+.alert-message.warning { background: rgba(255, 204, 0, .30); border-color: rgba(180, 120, 0, .25); }
+.alert-message.warning h4 { color: #8a5a00; }
+.alert-message.error { background: rgba(255, 59, 48, .22); border-color: rgba(224, 11, 44, .30); }
 .alert-message.error h4 { color: #d70015; }
+.alert-message.info { background: rgba(0, 113, 227, .14); border-color: rgba(0, 113, 227, .30); }
+.alert-message.info h4 { color: var(--mac-blue); }
 
-.alert-message.info {
-  background: #f0f7ff;
-  border-color: rgba(0, 113, 227, 0.30);
-}
-.alert-message.info h4 { color: var(--mac-blue-active); }
-
-/* ---------- 徽标与接口标签 ---------- */
+/* ---------- 徽标 ---------- */
 
 .label, .badge {
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  background: rgba(0, 0, 0, 0.06);
-  color: var(--mac-text-2);
-  text-shadow: none;
-  letter-spacing: 0.02em;
+  border-radius: 7px; font-size: 11px; font-weight: 600; padding: 2px 8px;
+  background: rgba(0, 0, 0, .07); color: var(--mac-text-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4);
 }
-
-.label.success, .ifacebadge-active { background: #34c75922; color: #248a3d; }
+.label.success { background: rgba(52, 199, 89, .22); color: #248a3d; }
 .label.notice { background: var(--mac-blue); color: #fff; }
-.label.warning { background: #ffcc0022; color: #946a00; }
-.label.important { background: #ff3b3022; color: #d70015; }
+.label.warning { background: rgba(255, 204, 0, .28); color: #8a5a00; }
+.label.important { background: rgba(255, 59, 48, .24); color: #d70015; }
 
 .ifacebadge {
-  background: rgba(0, 0, 0, 0.045);
-  border: 1px solid var(--mac-border);
+  background: rgba(255, 255, 255, .5);
+  border: 1px solid var(--lg-edge);
   border-radius: 10px;
-  box-shadow: none;
   color: var(--mac-text);
   padding: 3px 9px;
   font-size: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5);
 }
 
-.ifacebox {
-  border-radius: 12px;
-  border: 1px solid var(--mac-border);
-  background: var(--mac-card);
-  overflow: hidden;
-}
+/* ---------- 进度条 ---------- */
 
-.ifacebox-head {
-  background: rgba(0, 0, 0, 0.04);
-  color: var(--mac-text);
-  padding: 5px 10px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-/* ---------- 进度条 / 下拉增强 ---------- */
-
-.cbi-progressbar {
-  background: rgba(120, 120, 128, 0.16);
-  border: none;
-  border-radius: 9999px;
-  height: 10px;
-  overflow: hidden;
-}
-
-.cbi-progressbar > div {
-  background: linear-gradient(90deg, var(--mac-blue), #40a9ff);
-  border-radius: 9999px;
-  height: 100%;
-}
-
-.cbi-dropdown > ul.preview {
-  border-radius: 8px;
-}
-
-.cbi-dropdown .more,
-.cbi-dropdown > ul > li {
-  border-radius: 6px;
-}
+.cbi-progressbar { background: rgba(120, 120, 128, .18); border: none; border-radius: 9999px; height: 10px; overflow: hidden; }
+.cbi-progressbar > div { background: linear-gradient(90deg, var(--mac-blue), #40a9ff); border-radius: 9999px; height: 100%; }
 
 /* ---------- 页脚 ---------- */
 
-footer {
-  color: var(--mac-text-2);
-  font-size: 12px;
-  text-align: center;
-  padding: 20px 0 28px;
-  opacity: 0.85;
-}
-
+footer { color: var(--mac-text-2); font-size: 12px; text-align: center; padding: 20px 0 28px; opacity: .85; }
 footer a { color: var(--mac-text-2); }
 
-/* ---------- 登录页 ---------- */
-
-body[data-page=""] .container,
-#maincontent.sysauth {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - 60px);
-}
-
-/* ---------- 响应式下的磨砂延续 ---------- */
-
+/* ---------- 响应式 ---------- */
 @media (max-device-width: 854px) {
-  header {
-    position: static;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: var(--mac-card);
-  }
+  header { position: static; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 
-/* ---------- 暗色模式自动适配（跟随系统） ---------- */
+/* ================================================================
+   暗色模式（跟随系统）— 深色玻璃
+   ================================================================ */
 
 @media (prefers-color-scheme: dark) {
-  body:not([data-darkmode="false"]) {
-    --mac-bg: #1c1c1e;
+  :root {
+    --lg-tint: 30, 30, 32;
+    --lg-edge: rgba(0, 0, 0, .55);
+    --lg-spec: rgba(255, 255, 255, .16);
+    --mac-bg: #0d0d0f;
     --mac-blue: #0a84ff;
     --mac-blue-hover: #3395ff;
-    --mac-blue-active: #409cff;
     --mac-text: #f5f5f7;
     --mac-text-2: #98989d;
-    --mac-border: rgba(255, 255, 255, 0.12);
-    --mac-card: #2c2c2e;
-    --mac-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.3);
-    --mac-glass: rgba(30, 30, 32, 0.72);
   }
 
-  body:not([data-darkmode="false"]),
-  body:not([data-darkmode="false"]) .cbi-map {
+  body {
     background-color: var(--mac-bg);
+    background-image:
+      radial-gradient(900px 520px at 88% -8%, rgba(10, 132, 255, .16), transparent 60%),
+      radial-gradient(720px 460px at -8% 34%, rgba(255, 159, 10, .10), transparent 62%),
+      radial-gradient(820px 600px at 52% 112%, rgba(94, 92, 230, .14), transparent 62%);
+    background-attachment: fixed;
     color: var(--mac-text);
   }
 
-  body:not([data-darkmode="false"]) .cbi-section,
-  body:not([data-darkmode="false"]) .alert-message,
-  body:not([data-darkmode="false"]) .ifacebox {
-    background-color: var(--mac-card);
+  .cbi-section > h3, .cbi-section > legend, .cbi-map > h3 {
+    border-bottom-color: rgba(255, 255, 255, .10);
+    text-shadow: none;
+  }
+
+  header .brand, .nav > li > a.menu, .nav > li > a { color: var(--mac-text); }
+  .nav > li > a:hover, .nav a.menu:hover, header .brand:hover { background: rgba(255, 255, 255, .10); }
+
+  .dropdown-menu li a, .dropdown-menu a.menu { color: var(--mac-text); }
+  .dropdown-menu li a:hover, .dropdown-menu a.menu:hover { background: var(--mac-blue); color: #fff; }
+
+  input[type="text"], input[type="password"], select, textarea, .cbi-dropdown,
+  .cbi-input-text, .cbi-input-select {
+    background: rgba(0, 0, 0, .35);
+    border-color: rgba(255, 255, 255, .14);
     color: var(--mac-text);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
   }
 
-  body:not([data-darkmode="false"]) header {
-    background: var(--mac-glass);
+  .btn, .cbi-button { background: rgba(255, 255, 255, .10); border-color: rgba(255, 255, 255, .12); color: var(--mac-text); }
+  .btn:hover, .cbi-button:hover { background: rgba(255, 255, 255, .18); }
+  .btn.primary, .cbi-button.primary, .cbi-button-apply, .cbi-button-save {
+    background: var(--mac-blue); border-color: rgba(0, 60, 130, .4);
   }
 
-  body:not([data-darkmode="false"]) header .brand,
-  body:not([data-darkmode="false"]) .nav > li > a.menu,
-  body:not([data-darkmode="false"]) .nav > li > a {
-    color: var(--mac-text);
-  }
+  .table .tr, .cbi-section-table-row { border-bottom-color: rgba(255, 255, 255, .08); }
+  .table .tr:hover, .cbi-section-table-row:hover { background: rgba(10, 132, 255, .12); }
 
-  body:not([data-darkmode="false"]) .nav > li > a:hover,
-  body:not([data-darkmode="false"]) .nav a.menu:hover,
-  body:not([data-darkmode="false"]) header .brand:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
+  .cbi-tabmenu, ul.tabs { background: rgba(120, 120, 128, .26); }
+  .cbi-tabmenu li.active a, ul.tabs li.active a { background: rgba(58, 58, 60, .95); color: var(--mac-text); box-shadow: 0 1px 4px rgba(0, 0, 0, .4); }
+  .cbi-tabmenu li:hover a { background: rgba(255, 255, 255, .06); }
 
-  body:not([data-darkmode="false"]) .dropdown-menu {
-    background: rgba(44, 44, 46, 0.94) !important;
-    border-color: var(--mac-border);
-  }
+  .alert-message.warning { background: rgba(255, 204, 0, .16); border-color: rgba(255, 204, 0, .30); }
+  .alert-message.error { background: rgba(255, 69, 58, .16); border-color: rgba(255, 69, 58, .35); }
+  .alert-message.info { background: rgba(10, 132, 255, .14); border-color: rgba(10, 132, 255, .35); }
 
-  body:not([data-darkmode="false"]) .dropdown-menu li a:hover,
-  body:not([data-darkmode="false"]) .dropdown-menu a.menu:hover {
-    background: var(--mac-blue);
-    color: #fff;
-  }
+  .label, .badge { background: rgba(255, 255, 255, .10); color: var(--mac-text-2); box-shadow: none; }
+  .label.success { color: #30d158; }
+  .label.warning { color: #ffd60a; }
+  .label.important { color: #ff453a; }
 
-  body:not([data-darkmode="false"]) input[type="text"],
-  body:not([data-darkmode="false"]) input[type="password"],
-  body:not([data-darkmode="false"]) select,
-  body:not([data-darkmode="false"]) textarea,
-  body:not([data-darkmode="false"]) .cbi-dropdown {
-    background: #1c1c1e;
-    color: var(--mac-text);
-    border-color: rgba(255, 255, 255, 0.18);
-  }
+  .ifacebadge { background: rgba(255, 255, 255, .08); color: var(--mac-text); }
 
-  body:not([data-darkmode="false"]) .btn,
-  body:not([data-darkmode="false"]) .cbi-button {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--mac-text);
-  }
-
-  body:not([data-darkmode="false"]) .btn:hover,
-  body:not([data-darkmode="false"]) .cbi-button:hover {
-    background: rgba(255, 255, 255, 0.14);
-  }
-
-  body:not([data-darkmode="false"]) .cbi-section > h3,
-  body:not([data-darkmode="false"]) .cbi-section > legend,
-  body:not([data-darkmode="false"]) .cbi-map > h3 {
-    border-bottom-color: var(--mac-border);
-  }
-
-  body:not([data-darkmode="false"]) .table .tr,
-  body:not([data-darkmode="false"]) .cbi-section-table-row {
-    border-bottom-color: rgba(255, 255, 255, 0.08);
-  }
-
-  body:not([data-darkmode="false"]) .table .tr:hover,
-  body:not([data-darkmode="false"]) .cbi-section-table-row:hover {
-    background: rgba(10, 132, 255, 0.10);
-  }
-
-  body:not([data-darkmode="false"]) .cbi-tabmenu,
-  body:not([data-darkmode="false"]) ul.tabs {
-    background: rgba(120, 120, 128, 0.24);
-  }
-
-  body:not([data-darkmode="false"]) .cbi-tabmenu li.active a,
-  body:not([data-darkmode="false"]) ul.tabs li.active a {
-    background: #3a3a3c;
-    color: var(--mac-text);
-  }
-
-  body:not([data-darkmode="false"]) .label,
-  body:not([data-darkmode="false"]) .ifacebadge {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--mac-text-2);
-  }
-
-  body:not([data-darkmode="false"]) .label.success { color: #30d158; }
-  body:not([data-darkmode="false"]) .label.important { color: #ff453a; }
-  body:not([data-darkmode="false"]) .label.warning { color: #ffd60a; }
-  body:not([data-darkmode="false"]) ::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.25);
-    background-clip: content-box;
-  }
+  ::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, .25); background-clip: content-box; }
 }
