@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# LuCI 默认主题：mac（macOS Liquid Glass）
+#
+# 注：文件名用 zzz-0- 前缀而非常规 30_luci-theme-mac——保留配置升级
+# （sysupgrade 保留 rootfs_data）时，旧固件首启已执行过的 uci-defaults
+# 会在 overlay 留下 whiteout，把新固件 rootfs 里的同名文件「隐藏」，
+# 导致本脚本不再执行、默认主题维持旧值。
+# 全新文件名可确保每次版本升级后本脚本都会重新执行，
+# 把默认外观切回 Mac（用户在 LuCI 手动选择的主题不受影响——
+# 若用户手动切走，本脚本会在下次升级时尊重并保持该选择）。
+
+uci -q set luci.themes.Mac=/luci-static/mac
+uci -q set luci.main.mediaurlbase=/luci-static/mac
+uci -q commit luci
+
+exit 0
