@@ -3532,3 +3532,26 @@ input[type="text"], input[type="password"], select, textarea {
   box-sizing: border-box;
 }
 .cbi-section + .cbi-section { margin-top: 18px; }
+
+/* ================================================================
+   v4.1: Tabbar Unfloat — 页签行去 float
+   bootstrap 继承段 .tabs li { float: left } 使页签脱离容器宽度
+   计算：overflow-x:auto 容器不产生横向滚动，溢出页签被视口
+   clip 直接裁掉（表现为 CPU0/CPU1 页签只剩半个、QModem 页签
+   行截断）。去 float 改 inline-block，页签行在卡片内完整滑动。
+   ================================================================ */
+ul.tabs, ul.cbi-tabs, ul.cbi-tabmenu, .cbi-tabmenu,
+.cbi-map ul.tabs, .cbi-section ul.tabs, div.tabs {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  display: block;
+}
+ul.tabs li, ul.cbi-tabs li, ul.cbi-tabmenu li, .cbi-tabmenu li,
+.cbi-map ul.tabs li, .cbi-section ul.tabs li {
+  float: none !important;
+  display: inline-block !important;
+  white-space: nowrap;
+}
+ul.tabs::after, ul.cbi-tabs::after, ul.cbi-tabmenu::after,
+.cbi-tabmenu::after { content: ""; display: block; clear: both; }
