@@ -3416,3 +3416,65 @@ header .brand,
 .nav > li > a.menu:hover {
   color: var(--mac-blue) !important;
 }
+
+/* ================================================================
+   v3.9: Liquid Glass v3 — 从「毛玻璃」到「液态玻璃」
+   与苹果液态玻璃的三处核心差距，一次补齐：
+   1) 边缘折射环：玻璃边缘如透镜般聚光（inset 多环高光/暗环）
+   2) 立体光渐变：面板内部上亮下暗，玻璃有了厚度与反光面
+   3) 果冻弹出：下拉以弹簧动画展开，而非生硬出现
+   backdrop-filter 升级为 blur+saturate+brightness+contrast 四重
+   滤镜，折射质感贴近 iOS 26 实机。
+   ================================================================ */
+:root {
+  --lg-sheen: linear-gradient(180deg,
+    rgba(255, 255, 255, .30) 0%,
+    rgba(255, 255, 255, .05) 42%,
+    rgba(255, 255, 255, .12) 100%);
+  --lg-ring:
+    inset 0 1.5px 1.5px rgba(255, 255, 255, .78),
+    inset 0 -1px 1px rgba(255, 255, 255, .30),
+    inset 1.5px 0 1px rgba(255, 255, 255, .22),
+    inset -1.5px 0 1px rgba(255, 255, 255, .22),
+    inset 0 0 14px rgba(255, 255, 255, .15);
+}
+header,
+.nav .dropdown-menu {
+  background-image: var(--lg-sheen);
+  -webkit-backdrop-filter: blur(40px) saturate(2) brightness(1.05) contrast(1.02) !important;
+  backdrop-filter: blur(40px) saturate(2) brightness(1.05) contrast(1.02) !important;
+}
+.nav .dropdown-menu {
+  box-shadow:
+    var(--lg-ring),
+    0 14px 44px rgba(0, 0, 0, .22),
+    0 4px 16px rgba(0, 0, 0, .12) !important;
+}
+header {
+  box-shadow:
+    var(--lg-ring),
+    0 1px 14px rgba(0, 0, 0, .10),
+    0 4px 22px rgba(0, 0, 0, .06) !important;
+}
+@keyframes lg-jelly {
+  0%   { opacity: 0; transform: scale(.90) translateY(-8px); }
+  55%  { opacity: 1; transform: scale(1.03) translateY(1px); }
+  78%  { transform: scale(.995) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.dropdown-menu {
+  transform-origin: top center;
+  animation: lg-jelly .34s cubic-bezier(.34, 1.3, .5, 1) both;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --lg-sheen: linear-gradient(180deg,
+      rgba(255, 255, 255, .10) 0%,
+      rgba(255, 255, 255, .02) 45%,
+      rgba(255, 255, 255, .05) 100%);
+  }
+  header,
+  .nav .dropdown-menu {
+    background-image: var(--lg-sheen);
+  }
+}
