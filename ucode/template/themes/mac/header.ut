@@ -6,7 +6,11 @@
 -#}
 
 {%
-	import { getuid, getspnam } from 'luci.core';
+	import { getuid } from 'luci.core';
+
+	// getspnam() only exists in newer luci.core versions; probe at runtime so
+	// compilation does not fail on firmware shipping an older luci.core.
+	const lcore = require('luci.core');
 
 	const boardinfo = ubus.call('system', 'board') ?? {};
 	const darkpref = (theme == 'bootstrap-dark' ? 'true' : (theme == 'bootstrap-light' ? 'false' : null));
@@ -54,7 +58,7 @@
 		</header>
 
 		<div id="maincontent" class="container">
-			{% if (getuid() == 0 && getspnam('root')?.pwdp === ''): %}
+			{% if (getuid() == 0 && typeof lcore?.getspnam === 'function' && lcore.getspnam('root')?.pwdp === ''): %}
 				<div class="alert-message warning">
 					<h4>{{ _('No password set!') }}</h4>
 					<p>{{ _('There is no password set on this router. Please configure a root password to protect the web interface.') }}</p>
