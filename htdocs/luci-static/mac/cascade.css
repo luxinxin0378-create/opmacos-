@@ -3394,3 +3394,25 @@ header {
   -webkit-backdrop-filter: blur(40px) saturate(1.9) !important;
   backdrop-filter: blur(40px) saturate(1.9) !important;
 }
+
+/* ================================================================
+   v3.8: iOS Blue — 强调色提亮 + 顶栏导航上蓝
+   用户点名截图中的 iStore 亮蓝（iOS 系统蓝 #007AFF）：
+   1) 全局 --mac-blue 由 #0071e3（官网暗蓝）提亮为 #007AFF，
+      链接/按钮/hover/勾选框统一换肤；
+   2) 顶栏品牌与主导航文字上蓝（iOS 导航蓝字风格），
+      hover 保持蓝底加灰垫，暗色模式自动沿用同一蓝。
+   ================================================================ */
+:root {
+  --mac-blue: #007aff;
+  --mac-blue-hover: #0a84ff;
+}
+header .brand,
+.nav > li > a,
+.nav > li > a.menu {
+  color: var(--mac-blue) !important;
+}
+.nav > li > a:hover,
+.nav > li > a.menu:hover {
+  color: var(--mac-blue) !important;
+}
