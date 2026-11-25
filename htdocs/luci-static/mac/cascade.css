@@ -3626,3 +3626,25 @@ option, optgroup {
   min-height: 0 !important;
   padding: 0 !important;
 }
+
+/* ================================================================
+   v4.5: Dropdown Overlay — cbi-dropdown 展开列表裁剪修复
+   现象：接口页「添加新接口」的设备下拉展开后只剩一条蓝色高亮条，
+   右侧出现横向滚动条，选项列表完全不可见。
+   根因：v4.0 为防宽表格撑破页面，给 .cbi-section-node/.cbi-map-
+   descr/.cbi-dynlist 等容器加了 overflow-x:auto——CSS 规范规定
+   横轴可滚的容器其纵轴 visible 会被强制计算为 auto，容器同时
+   获得纵向裁剪：接口页「设备」下拉是 LuCI 自绘 cbi-dropdown
+   组件（展开列表为页面内绝对定位元素，非原生弹出层），向下
+   展开超出容器边界即被裁剪，只剩选中项高亮条。
+   修法：展开态（[open]）用 :has() 从祖先链豁免 overflow 裁剪，
+   列表浮出容器正常显示；收起态恢复防撑破防护，互不干扰。
+   ================================================================ */
+html:has(.cbi-dropdown[open]),
+body:has(.cbi-dropdown[open]),
+div:has(.cbi-dropdown[open]) {
+  overflow: visible !important;
+}
+.cbi-dropdown[open] {
+  overflow: visible !important;
+}
