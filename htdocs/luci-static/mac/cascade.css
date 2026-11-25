@@ -3381,3 +3381,16 @@ header {
   color: #fff !important;
   text-shadow: none !important;
 }
+
+/* ================================================================
+   v3.7: Menu Solidify — 下拉菜单抗透干扰
+   v3.6 白玻璃在页面表格上方透出文字，与菜单项叠加影响阅读。
+   浮层≠顶栏：菜单需要更高的实度与更强的模糊——
+   alpha 提升至默认档 0.92（跟随用户玻璃档位自动缩放），
+   blur 由 26px 提至 40px，透出内容只剩淡淡的色块呼吸感。
+   ================================================================ */
+.nav .dropdown-menu {
+  background: rgba(var(--lg-tint), calc(var(--lg-alpha) + .26)) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(1.9) !important;
+  backdrop-filter: blur(40px) saturate(1.9) !important;
+}
