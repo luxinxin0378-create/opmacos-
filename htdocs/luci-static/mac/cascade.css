@@ -3064,3 +3064,253 @@ footer a { color: var(--mac-text-2); }
 
   ::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, .25); background-clip: content-box; }
 }
+
+/* ================================================================
+   LuCI Theme "mac" — Apple Deep Integration v3
+   在 v2 Liquid Glass 之上做「更深苹果化」：
+     1. iOS 开关（checkbox → toggle）/ radio / range 全自绘
+     2. 模态框 & 登录页 macOS 化（毛玻璃弹窗 + 苹果蓝按钮）
+     3. cbi-dropdown 展开面板、tooltip 玻璃化
+     4. iOS 缓动动效 / 卡片入场 / 触感细节
+     5. 暗色模式补充适配
+   说明：本主题 install 由 Makefile 覆盖，CSS 不经 csstidy 压缩，
+         现代语法（backdrop-filter / calc / 自定义属性）安全可用。
+   ================================================================ */
+
+:root {
+  --ease-ios: cubic-bezier(.32, .72, 0, 1);   /* iOS sheet 出场曲线 */
+  --ios-green: #34c759;
+  --ios-green-dark: #30d158;
+  --radius-card: 22px;
+}
+
+/* ---------- 触感基础 ---------- */
+
+* { -webkit-tap-highlight-color: transparent; }
+body { font-variant-numeric: tabular-nums; text-rendering: optimizeLegibility; }
+a, button, .btn, .cbi-button { transition-timing-function: var(--ease-ios); }
+a:focus-visible, button:focus-visible, .btn:focus-visible, .cbi-button:focus-visible {
+  outline: 2px solid var(--mac-blue); outline-offset: 2px;
+}
+
+/* ---------- iOS 开关：checkbox → toggle（自绘） ---------- */
+
+input[type="checkbox"] {
+  -webkit-appearance: none; appearance: none;
+  width: 40px; height: 24px; min-width: 40px;
+  margin: 2px 0; padding: 0;
+  border-radius: 999px;
+  background: rgba(120, 120, 128, .32);
+  position: relative; cursor: pointer; vertical-align: middle;
+  transition: background .25s var(--ease-ios);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .14);
+}
+input[type="checkbox"]::after {
+  content: ""; position: absolute; left: 2px; top: 2px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .28), 0 0 1px rgba(0, 0, 0, .18);
+  transition: transform .25s var(--ease-ios), width .18s var(--ease-ios);
+}
+input[type="checkbox"]:checked {
+  background: var(--ios-green);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .06);
+}
+input[type="checkbox"]:checked::after { transform: translateX(16px); }
+input[type="checkbox"]:active::after { width: 24px; }
+input[type="checkbox"]:checked:active::after { transform: translateX(12px); }
+input[type="checkbox"]:disabled { opacity: .4; cursor: not-allowed; }
+
+/* 表格批量选择框：恢复紧凑原生样式（避免挤占单元格） */
+.table input[type="checkbox"], .cbi-section-table-row input[type="checkbox"],
+th input[type="checkbox"], td input[type="checkbox"] {
+  -webkit-appearance: auto; appearance: auto;
+  width: 15px; height: 15px; min-width: 0;
+  border-radius: 3px; background: none; box-shadow: none;
+  position: static; accent-color: var(--mac-blue);
+}
+.table input[type="checkbox"]::after, .cbi-section-table-row input[type="checkbox"]::after,
+th input[type="checkbox"]::after, td input[type="checkbox"]::after {
+  content: none; display: none;
+}
+
+/* ---------- iOS 单选点 ---------- */
+
+input[type="radio"] {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; margin: 2px 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, .28);
+  background: #fff; position: relative;
+  cursor: pointer; vertical-align: middle;
+  transition: border-color .2s var(--ease-ios), box-shadow .2s var(--ease-ios);
+}
+input[type="radio"]:checked {
+  border-color: var(--mac-blue); border-width: 5px;
+  box-shadow: 0 0 0 3.5px rgba(0, 113, 227, .22);
+}
+input[type="radio"]:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---------- iOS 滑杆 ---------- */
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  height: 4px; border-radius: 999px;
+  background: rgba(120, 120, 128, .28);
+  outline: none; vertical-align: middle;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; cursor: grab;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .32), 0 0 0 .5px rgba(0, 0, 0, .1);
+  transition: transform .15s var(--ease-ios);
+}
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.12); cursor: grabbing; }
+
+/* ---------- 模态框 & 登录页：macOS 化 ---------- */
+
+#modal_overlay {
+  background: rgba(0, 0, 0, .38);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  animation: v3-fade .22s var(--ease-ios);
+}
+.modal {
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(0, 0, 0, .1);
+  background: rgba(var(--lg-tint), .90);
+  -webkit-backdrop-filter: blur(46px) saturate(190%);
+  backdrop-filter: blur(46px) saturate(190%);
+  box-shadow:
+    inset 0 1px 0 var(--lg-spec),
+    inset 0 0 0 1px rgba(255, 255, 255, .12),
+    0 30px 80px rgba(0, 0, 0, .35),
+    0 8px 24px rgba(0, 0, 0, .18);
+  padding: 24px 26px;
+  max-width: 420px;
+  animation: v3-sheet .34s var(--ease-ios);
+}
+.modal h3, .modal .modal-title { font-size: 17px; font-weight: 600; letter-spacing: -.02em; }
+
+/* 登录表单容器在弹窗内取消嵌套玻璃卡，避免「卡中卡」 */
+.modal .cbi-map, .modal .cbi-section, .modal .cbi-section-node {
+  background: transparent; border: none; box-shadow: none;
+  padding: 0; margin: 0;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  animation: none;
+}
+.modal .cbi-value { padding: 7px 0; }
+.modal .cbi-value-title { font-size: 13.5px; font-weight: 500; }
+.modal .cbi-value-field input {
+  font-size: 15px; padding: 9px 12px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .72);
+}
+.modal .btn, .modal .cbi-button { font-size: 14px; padding: 8px 22px; }
+
+/* 登录主按钮：苹果蓝大按钮（覆盖 bootstrap .important 绿） */
+.modal .btn.important, .modal .cbi-button-positive.important {
+  background: var(--mac-blue);
+  border-color: transparent;
+  color: #fff;
+  width: 100%;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-size: 14.5px; font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0, 113, 227, .35), inset 0 1px 0 rgba(255, 255, 255, .3);
+}
+.modal .btn.important:hover, .modal .cbi-button-positive.important:hover {
+  background: var(--mac-blue-hover); color: #fff;
+}
+
+/* noscript 后备节：模态渲染后隐藏 */
+body > section[hidden] { display: none; }
+
+/* ---------- cbi-dropdown 展开面板玻璃化 ---------- */
+
+.cbi-dropdown > ul.dropdown {
+  background: rgba(var(--lg-tint), .95);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, .1);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, .28), inset 0 1px 0 var(--lg-spec);
+  padding: 5px;
+  z-index: 900;
+  animation: v3-pop .18s var(--ease-ios);
+}
+.cbi-dropdown > ul.dropdown li { border-radius: 8px; padding: 6px 10px; transition: background .12s; }
+.cbi-dropdown > ul.dropdown li:hover { background: rgba(0, 113, 227, .1); }
+.cbi-dropdown > ul.dropdown li.selected { background: var(--mac-blue); color: #fff; }
+
+/* ---------- tooltip：暗玻璃浮层 ---------- */
+
+.cbi-tooltip {
+  border-radius: 10px;
+  background: rgba(40, 40, 44, .95);
+  color: #fff;
+  font-size: 12px;
+  padding: 7px 11px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .3);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+/* ---------- iOS 动效 ---------- */
+
+@keyframes v3-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes v3-sheet {
+  from { opacity: 0; transform: translateY(10px) scale(.965); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes v3-pop {
+  from { opacity: 0; transform: translateY(-4px) scale(.98); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes v3-rise {
+  from { opacity: 0; transform: translateY(10px) scale(.985); }
+  to   { opacity: 1; transform: none; }
+}
+.cbi-section { animation: v3-rise .45s var(--ease-ios) backwards; }
+.cbi-map > .cbi-section:nth-child(2), #maincontent > .cbi-section:nth-of-type(2) { animation-delay: .05s; }
+.cbi-map > .cbi-section:nth-child(3), #maincontent > .cbi-section:nth-of-type(3) { animation-delay: .1s; }
+#maincontent > .alert-message { animation: v3-rise .4s var(--ease-ios) backwards; }
+
+/* ---------- 响应式补充 ---------- */
+@media (max-device-width: 854px) {
+  .modal { margin: 16px; max-width: none; }
+  header { padding: 8px 12px; }
+}
+
+/* ---------- 暗色模式 v3 补充 ---------- */
+@media (prefers-color-scheme: dark) {
+  .modal {
+    background: rgba(30, 30, 32, .88);
+    border-color: rgba(255, 255, 255, .12);
+  }
+  .modal .cbi-value-field input {
+    background: rgba(0, 0, 0, .4);
+    border-color: rgba(255, 255, 255, .16);
+  }
+  .cbi-dropdown > ul.dropdown {
+    background: rgba(30, 30, 32, .95);
+    border-color: rgba(255, 255, 255, .12);
+  }
+  input[type="checkbox"] {
+    background: rgba(120, 120, 128, .4);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .5);
+  }
+  input[type="checkbox"]:checked { background: var(--ios-green-dark); }
+  input[type="radio"] { background: #1c1c1e; border-color: rgba(255, 255, 255, .35); }
+  input[type="radio"]:checked { border-color: var(--mac-blue); box-shadow: 0 0 0 3.5px rgba(10, 132, 255, .28); }
+  input[type="range"] { background: rgba(120, 120, 128, .45); }
+  .cbi-tooltip { background: rgba(58, 58, 60, .95); }
+}
+
+/* 尊重减弱动态效果偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .cbi-section, .modal, #modal_overlay, .cbi-dropdown > ul.dropdown {
+    animation: none;
+  }
+}
