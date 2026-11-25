@@ -3579,3 +3579,24 @@ textarea {
   font-size: 14px !important;
   padding: 8px 12px !important;
 }
+
+/* ================================================================
+   v4.3: Popup Unclip — 下拉弹出列表文字被裁修复
+   现象：select 展开的选项列表每行左端文字被裁（"-- 选择 --"只剩
+   "选择 --"，蓝色选中条文字整行不可见）。
+   根因：v4.2 给 select 框体设置的水平 padding(12px) 被 Chromium
+   桌面渲染模式的原生弹出列表继承为容器 padding，选项文字的绘制
+   起点未随 padding 平移，左端 12px 内容被裁剪区吃掉。
+   修法：select 水平 padding 归零（弹层回到浏览器原生渲染），
+   垂直 padding 保留呼吸感；选项行显式声明字号/行高/内边距，
+   任何内核下都完整可读。min-height 38px 仍保证 iOS 触控高度。
+   ================================================================ */
+select {
+  padding: 4px 0 !important;
+}
+option, optgroup {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  min-height: 34px;
+  padding: 6px 10px;
+}
