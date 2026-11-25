@@ -3478,3 +3478,57 @@ header {
     background-image: var(--lg-sheen);
   }
 }
+
+/* ================================================================
+   v4.0: Mobile Guard — 移动端三修
+   1) 开关残留方框：继承段自绘的 checkbox ::before 方框未被 iOS
+      开关清除，与滑钮叠加显示——全局清除 ::before，开关/单选
+      只保留自绘段形态，旧方框彻底消失
+   2) 横向溢出：QModem / CPU 页宽表格撑破视口，顶栏与页签被裁——
+      overflow-x: clip 锁定视口（不破坏 sticky 顶栏），表格容器
+      内部滚动，页签行横向滑动，控件不超容器
+   3) 卡片重叠：超宽布局副作用 + 外边距塌陷——卡片建立独立
+      格式化上下文（flow-root），布局互不穿透
+   ================================================================ */
+
+/* 1) 清除继承段自绘方框（开关 ::before 残留） */
+input[type="checkbox"]::before,
+input[type="radio"]::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* 2) 横向溢出防护（clip 不创建滚动容器，sticky 顶栏不受影响） */
+html, body { overflow-x: clip; max-width: 100%; }
+#maincontent.container { max-width: 100%; box-sizing: border-box; }
+.cbi-section-node, .cbi-section-node-table,
+.cbi-map-descr, .table-responsive, .cbi-dynlist {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table { max-width: 100%; }
+table.cbi-section-table th,
+table.cbi-section-table td { word-break: break-word; }
+
+/* 页签行横向滑动（不再被裁） */
+ul.tabs, ul.cbi-tabs, .cbi-tabmenu, #maincontent > .tabs {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap;
+  max-width: 100%;
+}
+ul.tabs::-webkit-scrollbar, ul.cbi-tabs::-webkit-scrollbar,
+.cbi-tabmenu::-webkit-scrollbar { display: none; }
+
+/* 表单控件不超容器 */
+input[type="text"], input[type="password"], select, textarea {
+  max-width: 100%; box-sizing: border-box;
+}
+
+/* 3) 卡片独立格式化上下文（防塌陷/穿透重叠） */
+.cbi-section, .cbi-map, .cbi-map-descr, .cbi-modal {
+  display: flow-root;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.cbi-section + .cbi-section { margin-top: 18px; }
