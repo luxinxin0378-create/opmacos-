@@ -7,6 +7,7 @@
 
 {%
 	import { getuid } from 'luci.core';
+	import { stat } from 'fs';
 
 	// getspnam() only exists in newer luci.core versions; probe at runtime so
 	// compilation does not fail on firmware shipping an older luci.core.
@@ -14,6 +15,12 @@
 
 	const boardinfo = ubus.call('system', 'board') ?? {};
 	const darkpref = (theme == 'bootstrap-dark' ? 'true' : (theme == 'bootstrap-light' ? 'false' : null));
+
+	// Dynamic asset version: cache-busting query string derived from each
+	// file's mtime. Replacing a static file (sysupgrade / manual copy)
+	// instantly changes the URL, so browsers drop stale cached copies
+	// without requiring a hard refresh. Falls back to 0 if stat fails.
+	const assetv = (name) => stat(`/www${media}/${name}`)?.mtime ?? 0;
 
 	http.prepare_content('text/html; charset=UTF-8');
 -%}
@@ -35,10 +42,10 @@
 		{% endif %}
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="darkreader-lock">
-		<link rel="stylesheet" href="{{ media }}/cascade.css">
-		<link rel="stylesheet" media="only screen and (max-device-width: 854px)" href="{{ media }}/mobile.css" />
-		<link rel="icon" href="{{ media }}/logo_48.png" sizes="48x48">
-		<link rel="icon" href="{{ media }}/logo.svg" sizes="any">
+		<link rel="stylesheet" href="${media}/cascade.css?v=${assetv('cascade.css')}">
+		<link rel="stylesheet" media="only screen and (max-device-width: 854px)" href="${media}/mobile.css?v=${assetv('mobile.css')}" />
+		<link rel="icon" href="${media}/logo_48.png?v=${assetv('logo_48.png')}" sizes="48x48">
+		<link rel="icon" href="${media}/logo.svg?v=${assetv('logo.svg')}" sizes="any">
 		{% if (dispatched?.css): %}
 		<link rel="stylesheet" href="{{ resource }}/{{ dispatched.css }}">
 		{% endif %}
