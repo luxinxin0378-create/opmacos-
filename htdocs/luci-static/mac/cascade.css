@@ -3600,3 +3600,29 @@ option, optgroup {
   min-height: 34px;
   padding: 6px 10px;
 }
+
+/* ================================================================
+   v4.4: Select Native — select/弹层回退 v3.x 稳定基线
+   v4.2 的 select 强改（14px 字号/1.45 行高/38px 高/padding）被
+   Chromium 弹出列表继承进选项行盒，造成选项文字被裁；v4.3 对
+   option 的 min-height/padding 强改进一步触发弹层高度塌陷
+   （展开只剩一条蓝色选中条）。弹出列表渲染对 CSS 强改极其敏感，
+   本次将 select/option/optgroup 生效值精确回退到 v3.x 基线
+   （13px 字号 / 18px 行高 / 30px 框高 / 4px padding；option 回
+   100% 字号 / 2em 行高 / 无 padding——该基线弹层始终正常）。
+   框体观感仍由 .cbi-select 自绘箭头与容器渐变保证；
+   输入框/文本域的 v4.2 修复（38px 触控高度）不受影响。
+   ================================================================ */
+select {
+  height: 30px !important;
+  min-height: 0 !important;
+  line-height: 18px !important;
+  font-size: 13px !important;
+  padding: 4px !important;
+}
+option, optgroup {
+  font-size: 100% !important;
+  line-height: 2em !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
