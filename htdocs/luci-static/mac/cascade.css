@@ -3348,3 +3348,36 @@ header {
   border: 1px solid rgba(255, 255, 255, .16) !important;
   box-shadow: 0 12px 40px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .14) !important;
 }
+
+/* ================================================================
+   v3.6: Dropdown Un-Bootstrap
+   顶栏下拉菜单曾被官方 bootstrap 原生 .nav .dropdown-menu { #333 }
+   以更高特异性压制成黑面板——现以同特异性 + !important 夺回，
+   呈现 iOS 浅色模式菜单：白毛玻璃 + 深色文字 + 蓝色 hover。
+   暗色模式自动跟随 --lg-tint / --mac-text 变量切换深玻璃。
+   ================================================================ */
+
+.nav .dropdown-menu {
+  background: rgba(var(--lg-tint), calc(var(--lg-alpha) + .12)) !important;
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
+  border: 1px solid var(--lg-edge) !important;
+  border-radius: 16px !important;
+  box-shadow:
+    inset 0 1px 0 var(--lg-spec),
+    0 14px 44px rgba(0, 0, 0, .22),
+    0 4px 16px rgba(0, 0, 0, .12) !important;
+}
+.nav .dropdown-menu a.menu,
+.nav .dropdown-menu li a {
+  color: var(--mac-text) !important;
+  text-shadow: none !important;
+  border-radius: 9px;
+}
+.nav .dropdown-menu li a:hover,
+.nav .dropdown-menu a.menu:hover {
+  background: var(--mac-blue) !important;
+  background-image: none !important;
+  color: #fff !important;
+  text-shadow: none !important;
+}
