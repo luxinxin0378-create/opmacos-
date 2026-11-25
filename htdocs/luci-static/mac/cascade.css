@@ -3555,3 +3555,27 @@ ul.tabs li, ul.cbi-tabs li, ul.cbi-tabmenu li, .cbi-tabmenu li,
 }
 ul.tabs::after, ul.cbi-tabs::after, ul.cbi-tabmenu::after,
 .cbi-tabmenu::after { content: ""; display: block; clear: both; }
+
+/* ================================================================
+   v4.2: Input Unclamp — 表单控件放开高度
+   现象：select/输入框内文字下半截被压掉（conservative / 500000）。
+   治法：按 iOS 表单规格统一放开——height auto + min-height 38px
+   （标准触控高度）+ 行高 1.45 + 字号 14px + 对称 padding，
+   文字完整垂直居中，任何来源的高度挤压一并解除。
+   ================================================================ */
+input[type="text"], input[type="password"], input[type="email"],
+input[type="number"], input[type="search"], input[type="url"],
+input[type="datetime-local"], input[type="date"], input[type="time"],
+select {
+  height: auto !important;
+  min-height: 38px;
+  line-height: 1.45 !important;
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
+textarea {
+  height: auto !important;
+  line-height: 1.5 !important;
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
