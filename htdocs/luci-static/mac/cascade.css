@@ -3648,3 +3648,24 @@ div:has(.cbi-dropdown[open]) {
 .cbi-dropdown[open] {
   overflow: visible !important;
 }
+
+/* ================================================================
+   v4.6: Hover Menu Instant — 桌面悬停子菜单瞬时显示
+   现象（电脑浏览器）：顶栏导航悬停展开子菜单后，鼠标移向列表
+   准备选择时列表消失、反复闪现无法选中。
+   根因：v3.9 的果冻入场动画（opacity 0 → 1，scale .90 → 1，
+   0.34s）同时作用于悬停展开的导航子菜单——展开瞬间的透明期
+   让菜单"看不见"；更致命的是 scale(.90) 阶段列表命中区域比
+   视觉缩小 10%，鼠标快速移到列表边缘时看得见但命中不到，
+   :hover 断开 → display:none → 消失 → 又触发 hover 重播动画
+   （再从全透明开始）→ 循环抖动。触屏无悬停指针故不暴露。
+   修法：hover 精确指针设备（桌面鼠标）禁用入场动画，子菜单
+   瞬时显示（上游原生行为）；触屏设备（hover:none）保留果冻动效。
+   ================================================================ */
+@media (hover: hover) and (pointer: fine) {
+  .dropdown-menu {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
